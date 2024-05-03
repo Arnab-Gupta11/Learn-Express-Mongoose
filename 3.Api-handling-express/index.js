@@ -40,21 +40,6 @@ app.post("/api/v1/movies", async (req, res) => {
 });
 
 //{--------> GET : /api/v1/movies/:id <---------
-//<------- Route parameter -------->
-//Here id is a Route parameter => Route parameter are named URL segments that are used to capture the values spesified at their position in the URL
-// api/v1/movies/:id  => /api/v1/movies/4  => id=4
-//All the route parameter are stored as the property of the params object.And the params is property of the req object.
-
-//<------- Multiple route parameter -------->
-// => /api/v1/movies/:id/:name => /api/v1/movies/5/Arnab
-//we get the response as {id:"5",name:"Arnab"}
-//Here we can see that we passed the id as integer but it stored as string. So if we use it as a integer, we should parse it from string to integer.}
-
-//<-------- Optional route parameter -------->
-// => /api/v1/movies/:id/:name => /api/v1/movies/5/Arnab
-//In this example if we not assign the value of name then it will give error.So for this we need to use ? operator.
-//=> /api/v1/movies/:id/:name? => /api/v1/movies/5 =>{id:"5",name:undefined}
-//we use question mark after the parameter that we want as a Optional route parameter.Then it will not give error.
 app.get("/api/v1/movies/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -80,21 +65,6 @@ app.get("/api/v1/movies/:id", async (req, res) => {
   });
 });
 
-//-----> PUT vs PATCH <-----
-//Use PUT when you want to completely replace a resource or create a new resource with a specific URI.
-// Use PATCH when you want to apply partial modifications to an existing resource, updating only specific fields.
-//PUT replaces the entire resource, while PATCH applies partial modifications
-
-// let's say we want to update only the email address of a user. We can use the PATCH method to send a request with only the email field to be updated.
-// {
-//     "email": "newemail@example.com"
-// }
-//But if we use PUT method we need to request with whole object.
-// {
-//     "name":"Arnab",
-//     "email": "newemail@example.com".
-//     "district":"Chattogram"
-// }
 //{--------> PATCH : /api/v1/movies/:id <---------
 app.patch("/api/v1/movies/:id", async (req, res) => {
   const id = req.params.id;
@@ -120,6 +90,31 @@ app.patch("/api/v1/movies/:id", async (req, res) => {
       status: "success",
       data: {
         movie: movieToUpdate,
+      },
+    });
+  });
+});
+
+app.delete("/api/v1/movies/:id", async (req, res) => {
+  const id = req.params.id;
+  //Serching the movie using id
+  const movieToDelete = movies.find((el) => {
+    return el.id === id * 1;
+  });
+  if (!movieToDelete) {
+    return res.status(404).json({
+      status: "fail",
+      message: `Movie with id: ${id} is not found for delete`,
+    });
+  }
+  const deletedMovieIndex = movies.indexOf(movieToDelete);
+  movies.splice(deletedMovieIndex, 1);
+  fs.writeFile("./data/movies.json", JSON.stringify(movies), (err) => {
+    //status code 204 for no content
+    res.status(204).json({
+      status: "success",
+      data: {
+        movie: null,
       },
     });
   });
