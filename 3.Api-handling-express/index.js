@@ -50,8 +50,34 @@ app.post("/api/v1/movies", async (req, res) => {
 //Here we can see that we passed the id as integer but it stored as string. So if we use it as a integer, we should parse it from string to integer.}
 
 //<-------- Optional route parameter -------->
+// => /api/v1/movies/:id/:name => /api/v1/movies/5/Arnab
+//In this example if we not assign the value of name then it will give error.So for this we need to use ? operator.
+//=> /api/v1/movies/:id/:name? => /api/v1/movies/5 =>{id:"5",name:undefined}
+//we use question mark after the parameter that we want as a Optional route parameter.Then it will not give error.
+app.get("/api/v1/movies/:id", async (req, res) => {
+  const { id } = req.params;
 
-app.get("/api/v1/movies/:id", async (req, res) => {});
+  //Using javascript find method searching movie by id.
+  const movie = movies.find((el) => {
+    return el.id === id * 1; //converting id value string to integer.
+  });
+
+  //If movie is not found
+  if (!movie) {
+    return res.status(404).json({
+      status: "fail",
+      message: `Movie with id: ${id} is not found`,
+    });
+  }
+
+  //If movie found send the movie as response.
+  res.status(200).json({
+    status: "success",
+    data: {
+      movie,
+    },
+  });
+});
 
 //--------> Server listen at 5000 port <---------
 app.listen(5000, () => {
