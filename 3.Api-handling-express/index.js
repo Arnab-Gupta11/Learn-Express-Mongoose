@@ -29,6 +29,7 @@ app.post("/api/v1/movies", async (req, res) => {
   const newMovie = Object.assign({ id: newId }, movie);
   movies.push(newMovie);
   fs.writeFile("./data/movies.json", JSON.stringify(movies), (err) => {
+    //When we create a new resourse then status code will be 201
     res.status(201).json({
       status: "success",
       data: {
@@ -76,6 +77,51 @@ app.get("/api/v1/movies/:id", async (req, res) => {
     data: {
       movie,
     },
+  });
+});
+
+//-----> PUT vs PATCH <-----
+//Use PUT when you want to completely replace a resource or create a new resource with a specific URI.
+// Use PATCH when you want to apply partial modifications to an existing resource, updating only specific fields.
+//PUT replaces the entire resource, while PATCH applies partial modifications
+
+// let's say we want to update only the email address of a user. We can use the PATCH method to send a request with only the email field to be updated.
+// {
+//     "email": "newemail@example.com"
+// }
+//But if we use PUT method we need to request with whole object.
+// {
+//     "name":"Arnab",
+//     "email": "newemail@example.com".
+//     "district":"Chattogram"
+// }
+//{--------> PATCH : /api/v1/movies/:id <---------
+app.patch("/api/v1/movies/:id", async (req, res) => {
+  const id = req.params.id;
+  //Serching the movie using id
+  const movieToUpdate = movies.find((el) => {
+    return el.id === id * 1;
+  });
+  if (!movieToUpdate) {
+    return res.status(404).json({
+      status: "fail",
+      message: `Movie with id: ${id} is not found`,
+    });
+  }
+  const updatedMovieIndex = movies.indexOf(movieToUpdate);
+  //When two object have different property then assign method combine both object and return a new object.
+  //When two object have some property same then 2nd object value is updated to 1st object.that means 1st object is updated with 2nd object value.we use this here
+  Object.assign(movieToUpdate, req.body);
+
+  movies[updatedMovieIndex] = movieToUpdate;
+
+  fs.writeFile("./data/movies.json", JSON.stringify(movies), (err) => {
+    res.status(200).json({
+      status: "success",
+      data: {
+        movie: movieToUpdate,
+      },
+    });
   });
 });
 

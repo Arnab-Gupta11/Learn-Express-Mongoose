@@ -1,1 +1,8 @@
-[{"id":1,"name":"Man of steel","releaseYear":2012,"duration":130},{"id":2,"name":"Justice legue","releaseYear":2021,"duration":240},{"id":3,"name":"Avenger Endgame","releaseYear":2022,"duration":180},{"id":4,"name":"spiderman","releaseYear":2000,"duration":130},{"id":5,"name":"Harry Potter","releaseYear":2000,"duration":150},{"id":6,"name":"Captain America","releaseYear":2011,"duration":130}]
+[
+  { "id": 1, "name": "Man of steel", "releaseYear": 2011, "duration": 150 },
+  { "id": 2, "name": "Justice legue", "releaseYear": 2021, "duration": 240 },
+  { "id": 3, "name": "Avenger Endgame", "releaseYear": 2022, "duration": 180 },
+  { "id": 4, "name": "spiderman", "releaseYear": 2000, "duration": 130 },
+  { "id": 5, "name": "Harry Potter", "releaseYear": 2000, "duration": 150 },
+  { "id": 6, "name": "Captain America", "releaseYear": 2011, "duration": 130 }
+]
