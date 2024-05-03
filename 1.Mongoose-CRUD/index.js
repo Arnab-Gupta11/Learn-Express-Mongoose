@@ -37,7 +37,7 @@ const playlistSchema = new mongoose.Schema({
     // },
     validate: (value) => {
       if (value < 0) {
-        throw new Error("Video count should not be negative negative");
+        throw new Error("Video count should not be negative");
       }
     },
   },
