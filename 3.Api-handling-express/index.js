@@ -1,19 +1,17 @@
 const express = require("express"); //It will return a function
 const fs = require("fs");
+const morgan = require("morgan");
 const app = express(); //this function will return an object.
 
-/* -------> middleware-see notions note for more details <--------
-note=> If yoy creating a middleware and you want that middleware to be applied in all type of request, define and use it before all route handler function.
->> In order to use middleware,apply use method from app object. */
-/*--------> Custom middleware <---------
->> In case of Custom middleware always needs to call next() method end of the function.*/
-
+// <------- middleware ---------->
+//custom middlware funcion
 const logger = (req, res, next) => {
   console.log("Custom middleware is called");
   next();
 };
 
 app.use(express.json()); //this middleware add the request body to request object
+app.use(morgan("dev")); //morgan middleware logging the information about the request display it in console.
 app.use(logger);
 app.use((req, res, next) => {
   //accessing req object in custom middlware
