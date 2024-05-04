@@ -2,25 +2,44 @@ const express = require("express"); //It will return a function
 const fs = require("fs");
 const app = express(); //this function will return an object.
 
-//middleware
-app.use(express.json()); //this middleware add the request body to request object.
+/* -------> middleware-see notions note for more details <--------
+note=> If yoy creating a middleware and you want that middleware to be applied in all type of request, define and use it before all route handler function.
+>> In order to use middleware,apply use method from app object. */
+/*--------> Custom middleware <---------
+>> In case of Custom middleware always needs to call next() method end of the function.*/
+
+const logger = (req, res, next) => {
+  console.log("Custom middleware is called");
+  next();
+};
+
+app.use(express.json()); //this middleware add the request body to request object
+app.use(logger);
+app.use((req, res, next) => {
+  //accessing req object in custom middlware
+  req.requestedAt = new Date().toISOString();
+  next();
+});
 
 // fs.readFileSync return data in Stringfy formate. So convert to object we need to parse it.
 const movies = JSON.parse(fs.readFileSync("./data/movies.json", "utf-8"));
 
 //--------> Route handler function <---------
-//route handler function is a middleware.
+//route handler function also kind of middleware.But they called on some specific route.
 //req and res parameter are objects.these object go through all the middlewqre to route handler function.
+
 const getAllMovies = async (req, res) => {
   //response send in JSend JSON formate.
   res.status(200).json({
     status: "success",
+    requestedAt: req.requestedAt,
     count: movies.length, //count is send when there is multiple data in the json.
     data: {
       movies,
     },
   });
 };
+
 const createNewMovie = async (req, res) => {
   //req.body contain the data send by user.
   const movie = req.body;
