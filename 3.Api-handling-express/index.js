@@ -3,13 +3,15 @@ const fs = require("fs");
 const app = express(); //this function will return an object.
 
 //middleware
-app.use(express.json()); //this middleware use to send data from client to req.body
+app.use(express.json()); //this middleware add the request body to request object.
 
 // fs.readFileSync return data in Stringfy formate. So convert to object we need to parse it.
 const movies = JSON.parse(fs.readFileSync("./data/movies.json", "utf-8"));
 
-//--------> GET : /api/v1/movies <---------
-app.get("/api/v1/movies", async (req, res) => {
+//--------> Route handler function <---------
+//route handler function is a middleware.
+//req and res parameter are objects.these object go through all the middlewqre to route handler function.
+const getAllMovies = async (req, res) => {
   //response send in JSend JSON formate.
   res.status(200).json({
     status: "success",
@@ -18,13 +20,11 @@ app.get("/api/v1/movies", async (req, res) => {
       movies,
     },
   });
-});
-
-//--------> POST : /api/v1/movies <---------
-app.post("/api/v1/movies", async (req, res) => {
+};
+const createNewMovie = async (req, res) => {
   //req.body contain the data send by user.
   const movie = req.body;
-  const newId = movies.length + 1;
+  const newId = movies[movies.length - 1].id + 1;
   //assign method combine 2 object and return a new object.
   const newMovie = Object.assign({ id: newId }, movie);
   movies.push(newMovie);
@@ -37,10 +37,8 @@ app.post("/api/v1/movies", async (req, res) => {
       },
     });
   });
-});
-
-//{--------> GET : /api/v1/movies/:id <---------
-app.get("/api/v1/movies/:id", async (req, res) => {
+};
+const getMovie = async (req, res) => {
   const { id } = req.params;
 
   //Using javascript find method searching movie by id.
@@ -63,10 +61,8 @@ app.get("/api/v1/movies/:id", async (req, res) => {
       movie,
     },
   });
-});
-
-//{--------> PATCH : /api/v1/movies/:id <---------
-app.patch("/api/v1/movies/:id", async (req, res) => {
+};
+const updateMovie = async (req, res) => {
   const id = req.params.id;
   //Serching the movie using id
   const movieToUpdate = movies.find((el) => {
@@ -93,9 +89,8 @@ app.patch("/api/v1/movies/:id", async (req, res) => {
       },
     });
   });
-});
-
-app.delete("/api/v1/movies/:id", async (req, res) => {
+};
+const deleteMovie = async (req, res) => {
   const id = req.params.id;
   //Serching the movie using id
   const movieToDelete = movies.find((el) => {
@@ -118,7 +113,18 @@ app.delete("/api/v1/movies/:id", async (req, res) => {
       },
     });
   });
-});
+};
+
+//--------> Routes <---------
+// app.get("/api/v1/movies", getAllMovies);
+// app.post("/api/v1/movies", createNewMovie);
+// app.get("/api/v1/movies/:id", getMovie);
+// app.patch("/api/v1/movies/:id", updateMovie);
+// app.delete("/api/v1/movies/:id", deleteMovie);
+
+//--------> Another way to declare Routes <---------
+app.route("/api/v1/movies").get(getAllMovies).post(createNewMovie);
+app.route("/api/v1/movies/:id").get(getMovie).patch(updateMovie).delete(deleteMovie);
 
 //--------> Server listen at 5000 port <---------
 app.listen(5000, () => {
