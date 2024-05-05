@@ -19,6 +19,18 @@ const checkId = async (req, res, next, value) => {
   next();
 };
 
+const validateMovie = async (req, res, next) => {
+  const { name, releaseYear, duration } = req.body;
+  if (!name || !releaseYear || !duration) {
+    // 400 => bad request
+    return res.status(400).json({
+      status: "fail",
+      message: "Not a valid movie data",
+    });
+  }
+  next();
+};
+
 const getAllMovies = async (req, res) => {
   //response send in JSend JSON formate.
   res.status(200).json({
@@ -93,4 +105,5 @@ module.exports = {
   updateMovie,
   deleteMovie,
   checkId,
+  validateMovie,
 };
