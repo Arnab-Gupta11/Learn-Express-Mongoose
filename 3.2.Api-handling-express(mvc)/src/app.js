@@ -13,6 +13,7 @@ const logger = (req, res, next) => {
 
 app.use(express.json()); //this middleware add the request body to request object
 app.use(morgan("dev")); //morgan middleware logging the information about the request display it in console.
+app.use(express.static("./public"));
 app.use(logger);
 app.use((req, res, next) => {
   //accessing req object in custom middlware
