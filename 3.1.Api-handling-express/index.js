@@ -55,6 +55,7 @@ const createNewMovie = async (req, res) => {
     });
   });
 };
+
 const getMovie = async (req, res) => {
   const { id } = req.params;
 
