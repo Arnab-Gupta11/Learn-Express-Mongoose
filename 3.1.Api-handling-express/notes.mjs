@@ -1,11 +1,11 @@
 /*
 
  -------> middleware-see notions note for more details <--------
-note=> If yoy creating a middleware and you want that middleware to be applied in all type of request, define and use it before all route handler function.
+note=> If you creating a middleware and you want that middleware to be applied in all type of request, define and use it before all route handler function.
 >> In order to use middleware,apply use method from app object. 
 
 --------> Custom middleware <---------
->> In case of Custom middleware always needs to call next() method end of the function.
+>> In case of Custom middleware always need to call next() method end of the function.
 >> In custom middleware when we use the middleware in use method we simply pass the method not calling it. ex:- app.use(logger);
 >> But when we use third party middleware we call it inside use method.because in this case function itself not a middleware, it returns the middleware when we call it inside use method. 
 

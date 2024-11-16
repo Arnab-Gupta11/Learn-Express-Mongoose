@@ -94,7 +94,7 @@ const updateMovie = async (req, res) => {
   }
   const updatedMovieIndex = movies.indexOf(movieToUpdate);
   //When two object have different property then assign method combine both object and return a new object.
-  //When two object have some property same then 2nd object value is updated to 1st object.that means 1st object is updated with 2nd object value.we use this here
+  //When two objects have some property same then 2nd object value is updated to 1st object.that means 1st object is updated with 2nd object value.we use this here
   Object.assign(movieToUpdate, req.body);
 
   movies[updatedMovieIndex] = movieToUpdate;

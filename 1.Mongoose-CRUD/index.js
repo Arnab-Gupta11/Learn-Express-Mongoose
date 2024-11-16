@@ -1,9 +1,11 @@
-const express = require("express");
 require("dotenv").config();
+const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
-app.use(express.json());
 const port = 5000;
+
+//middleware
+app.use(express.json());
 
 mongoose
   .connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cliw5jo.mongodb.net/todoDB?retryWrites=true&w=majority`)
