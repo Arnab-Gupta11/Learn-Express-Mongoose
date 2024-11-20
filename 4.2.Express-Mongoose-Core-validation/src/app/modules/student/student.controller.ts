@@ -12,6 +12,7 @@ const createStudent = async (req: Request, res: Response) => {
       message: 'Student is created successfully',
       data: reuslt,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -56,8 +57,28 @@ const getSingleStudent = async (req: Request, res: Response) => {
   }
 };
 
+const deleteSingleStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+
+    const result = await StudentServices.deleteStudentFromDB(studentId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Student is deleted succesfully',
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error,
+    });
+  }
+};
+
 export const StudentControllers = {
   createStudent,
   getAllStudents,
   getSingleStudent,
+  deleteSingleStudent,
 };

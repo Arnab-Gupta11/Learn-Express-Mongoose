@@ -22,6 +22,7 @@ export type TLocalGuardian = {
 
 export type TStudent = {
   id: string;
+  password: string;
   name: TUserName;
   gender: 'male' | 'female' | 'other';
   dateOfBirth?: string;
@@ -35,9 +36,16 @@ export type TStudent = {
   localGuardian: TLocalGuardian;
   profileImage?: string;
   isActive: 'active' | 'blocked';
+  isDeleted: boolean;
 };
+//Custom Static method
+export interface StudentModel extends Model<TStudent> {
+  // eslint-disable-next-line no-unused-vars
+  isStudentExists(id: string): Promise<TStudent | null>;
+}
 
-export type TStudentMethods = {
+//Custom instance method
+/* export type TStudentMethods = {
   // eslint-disable-next-line no-unused-vars
   isStudentExists(id: string): Promise<TStudent | null>;
 };
@@ -45,4 +53,4 @@ export type StudentModel = Model<
   TStudent,
   Record<string, never>,
   TStudentMethods
->;
+>; */

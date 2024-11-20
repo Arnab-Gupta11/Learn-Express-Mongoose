@@ -4,9 +4,10 @@ import {
   TGuardian,
   TLocalGuardian,
   TStudent,
-  TStudentMethods,
   TUserName,
 } from './student.interface';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -105,118 +106,173 @@ const localGuradianSchema = new Schema<TLocalGuardian>({
   },
 });
 
-const studentSchema = new Schema<TStudent, StudentModel, TStudentMethods>({
-  id: {
-    type: String,
-    required: [true, 'Student ID is required.'],
-    unique: true,
-    trim: true,
-  },
-  name: {
-    type: userNameSchema,
-    required: [true, 'Student name is required.'],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ['male', 'female', 'other'],
-      message:
-        '{VALUE} is not a valid gender. Allowed values are male, female, or other.',
+const studentSchema = new Schema<TStudent, StudentModel>(
+  {
+    id: {
+      type: String,
+      required: [true, 'Student ID is required.'],
+      trim: true,
     },
-  },
-  dateOfBirth: {
-    type: String,
-    validate: {
-      validator: function (value: string) {
-        return /^\d{4}-\d{2}-\d{2}$/.test(value); // YYYY-MM-DD format
+    password: {
+      type: String,
+      required: [true, 'Password is required.'],
+      unique: true,
+      trim: true,
+    },
+    name: {
+      type: userNameSchema,
+      required: [true, 'Student name is required.'],
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ['male', 'female', 'other'],
+        message:
+          '{VALUE} is not a valid gender. Allowed values are male, female, or other.',
       },
-      message: (props) =>
-        `${props.value} is not a valid date of birth format. Use YYYY-MM-DD.`,
     },
-  },
-  email: {
-    type: String,
-    required: [true, 'Email address is required.'],
-    unique: true,
-    validate: {
-      validator: function (value: string) {
-        return /^\S+@\S+\.\S+$/.test(value); // Basic email validation
+    dateOfBirth: {
+      type: String,
+      validate: {
+        validator: function (value: string) {
+          return /^\d{4}-\d{2}-\d{2}$/.test(value); // YYYY-MM-DD format
+        },
+        message: (props) =>
+          `${props.value} is not a valid date of birth format. Use YYYY-MM-DD.`,
       },
-      message: (props) => `${props.value} is not a valid email address.`,
     },
-  },
-  contactNo: {
-    type: String,
-    required: [true, 'Contact number is required.'],
-    validate: {
-      validator: function (value: string) {
-        return /^\d{10}$/.test(value); // Validates 10-digit phone numbers
+    email: {
+      type: String,
+      required: [true, 'Email address is required.'],
+      unique: true,
+      validate: {
+        validator: function (value: string) {
+          return /^\S+@\S+\.\S+$/.test(value); // Basic email validation
+        },
+        message: (props) => `${props.value} is not a valid email address.`,
       },
-      message: (props) =>
-        `${props.value} is not a valid contact number. Must be 10 digits.`,
     },
-  },
-  emergencyContactNo: {
-    type: String,
-    required: [true, 'Emergency contact number is required.'],
-    validate: {
-      validator: function (value: string) {
-        return /^\d{10}$/.test(value); // Validates 10-digit phone numbers
+    contactNo: {
+      type: String,
+      required: [true, 'Contact number is required.'],
+      validate: {
+        validator: function (value: string) {
+          return /^\d{10}$/.test(value); // Validates 10-digit phone numbers
+        },
+        message: (props) =>
+          `${props.value} is not a valid contact number. Must be 10 digits.`,
       },
-      message: (props) =>
-        `${props.value} is not a valid emergency contact number. Must be 10 digits.`,
     },
-  },
-  bloodGroup: {
-    type: String,
-    enum: {
-      values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-      message:
-        '{VALUE} is not a valid blood group. Allowed values are A+, A-, B+, B-, AB+, AB-, O+, or O-.',
-    },
-  },
-  presentAddress: {
-    type: String,
-    required: [true, 'Present address is required.'],
-    trim: true,
-  },
-  permanentAddress: {
-    type: String,
-    required: [true, 'Permanent address is required.'],
-    trim: true,
-  },
-  guardian: {
-    type: guardianSchema,
-    required: [true, 'Guardian information is required.'],
-  },
-  localGuardian: {
-    type: localGuradianSchema,
-    required: [true, 'Local guardian information is required.'],
-  },
-  profileImage: {
-    type: String,
-    validate: {
-      validator: function (value: string) {
-        return /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|svg))$/.test(value); // Validates image URLs
+    emergencyContactNo: {
+      type: String,
+      required: [true, 'Emergency contact number is required.'],
+      validate: {
+        validator: function (value: string) {
+          return /^\d{10}$/.test(value); // Validates 10-digit phone numbers
+        },
+        message: (props) =>
+          `${props.value} is not a valid emergency contact number. Must be 10 digits.`,
       },
-      message: (props) => `${props.value} is not a valid profile image URL.`,
+    },
+    bloodGroup: {
+      type: String,
+      enum: {
+        values: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+        message:
+          '{VALUE} is not a valid blood group. Allowed values are A+, A-, B+, B-, AB+, AB-, O+, or O-.',
+      },
+    },
+    presentAddress: {
+      type: String,
+      required: [true, 'Present address is required.'],
+      trim: true,
+    },
+    permanentAddress: {
+      type: String,
+      required: [true, 'Permanent address is required.'],
+      trim: true,
+    },
+    guardian: {
+      type: guardianSchema,
+      required: [true, 'Guardian information is required.'],
+    },
+    localGuardian: {
+      type: localGuradianSchema,
+      required: [true, 'Local guardian information is required.'],
+    },
+    profileImage: {
+      type: String,
+      validate: {
+        validator: function (value: string) {
+          return /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|svg))$/.test(value); // Validates image URLs
+        },
+        message: (props) => `${props.value} is not a valid profile image URL.`,
+      },
+    },
+    isActive: {
+      type: String,
+      enum: {
+        values: ['active', 'blocked'],
+        message:
+          '{VALUE} is not a valid status. Allowed values are active or blocked.',
+      },
+      default: 'active',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
-  isActive: {
-    type: String,
-    enum: {
-      values: ['active', 'blocked'],
-      message:
-        '{VALUE} is not a valid status. Allowed values are active or blocked.',
+  {
+    toJSON: {
+      virtuals: true,
     },
-    default: 'active',
-  },
+  }
+);
+
+//virtual
+studentSchema.virtual('fullName').get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
 
-//Custom instance method.
-studentSchema.methods.isStudentExists = async function (id: string) {
+//Middleare
+
+//Document middleware
+studentSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_round)
+  );
+
+  next();
+});
+studentSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+});
+
+//Query middleware
+studentSchema.pre('find', async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+studentSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
+
+//Custom Static Method
+studentSchema.statics.isStudentExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
   return existingUser;
 };
+
+//Custom instance method.
+/* studentSchema.methods.isStudentExists = async function (id: string) {
+  const existingUser = await Student.findOne({ id });
+  return existingUser;
+}; */
 
 export const Student = model<TStudent, StudentModel>('Student', studentSchema);
